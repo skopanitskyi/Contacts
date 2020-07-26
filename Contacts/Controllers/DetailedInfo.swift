@@ -10,7 +10,11 @@ import UIKit
 
 class DetailedInfo: UIViewController {
     
-    public var user: User?
+    public var user: UserProtocol? {
+        didSet {
+            setupUserData()
+        }
+    }
     
     private let layoutView: UIView = {
         let view = UIView()
@@ -52,6 +56,7 @@ class DetailedInfo: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .white
         setupLayoutView()
         setupAvatar()
         setupName()
@@ -70,22 +75,12 @@ class DetailedInfo: UIViewController {
     
     private func setupAvatar() {
         layoutView.addSubview(avatar)
-        
-        DispatchQueue.global(qos: .utility).async {
-            if let user = self.user {
-                let image = UsersData.getImage(size: 175, user: user)
-                DispatchQueue.main.async {
-                    self.avatar.image = image
-                }
-            }
-        }
         avatar.centerXAnchor.constraint(equalTo: layoutView.centerXAnchor).isActive = true
         avatar.centerYAnchor.constraint(equalTo: layoutView.centerYAnchor).isActive = true
         avatar.heightAnchor.constraint(equalTo: layoutView.heightAnchor, multiplier: 0.5).isActive = true
     }
     
     private func setupName() {
-        name.text = user?.name
         view.addSubview(name)
         name.topAnchor.constraint(equalTo: avatar.bottomAnchor, constant: 15).isActive = true
         name.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
@@ -95,9 +90,6 @@ class DetailedInfo: UIViewController {
     
     private func setupOnlineStatus() {
         
-        if let isOnline = user?.isOnline {
-            onlineStatus.text = isOnline ? "online" : "offline"
-        }
         view.addSubview(onlineStatus)
         onlineStatus.topAnchor.constraint(equalTo: name.bottomAnchor, constant: 10).isActive = true
         onlineStatus.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
@@ -106,11 +98,24 @@ class DetailedInfo: UIViewController {
     }
     
     private func setupEmail() {
-        email.text = user?.email
         view.addSubview(email)
         email.topAnchor.constraint(equalTo: onlineStatus.bottomAnchor, constant: 10).isActive = true
         email.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
         email.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
         email.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+    }
+    
+    private func setupUserData() {
+        guard let user = self.user, let request = UserImageRequest.image(email: user.email, size: 200).request else {
+            return
+        }
+        name.text = user.name
+        email.text = user.email
+        onlineStatus.text = user.isOnline ? "online" : "offline"
+        NetworkService(request: request).downloadImage { image in
+            DispatchQueue.main.async {
+                self.avatar.image = image
+            }
+        }
     }
 }

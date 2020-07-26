@@ -1,10 +1,11 @@
 import UIKit
-import CryptoKit
 
-// Stores user data and methods for processing them
-struct UsersData {
+/// Stores user data and methods for processing them
+class UsersData {
     
-    public static var users = [User(name: "Serhii", email: "serhii@gmail.com", isOnline: true),
+    public static let shared = UsersData()
+    
+    public var users = [User(name: "Serhii", email: "serhii@gmail.com", isOnline: true),
                                User(name: "Aleksandr", email: "aleksandr@gmail.com", isOnline: false),
                                User(name: "Anatoly", email: "anatoly@gmail.com", isOnline: true),
                                User(name: "Andrey", email: "andrey@gmail.com", isOnline: true),
@@ -18,18 +19,20 @@ struct UsersData {
                                User(name: "Denis", email: "denis@gmail.com", isOnline: true),
                                User(name: "Max", email: "max@gmail.com", isOnline: true)]
     
-    private static let names = ["Vyacheslav", "Gennady", "Georgy", "Gleb", "Grigory", "Daniil", "Denis", "Dmitry", "Yevgeny",
+    private let names = ["Vyacheslav", "Gennady", "Georgy", "Gleb", "Grigory", "Daniil", "Denis", "Dmitry", "Yevgeny",
                                 "Yegor", "Zakhar", "Ivan", "Ilya", "Innokenty", "Iosif", "Kirill", "Konstantin", "Lev",
                                 "Leonid", "Maksim", "Matvey", "Mikhail", "Moisey", "Nikita", "Nikolay", "Oleg", "Pavel",
                                 "Pyotr", "Roman", "Ruslan", "Svyatoslav", "Semyon", "Stanislav", "Stepan", "Timofey",
                                 "Timur","Fedor", "Filipp", "Eduard", "Yuri", "Yakov", "Yan", "Yaroslav", "Aleksandra", "Alisa"]
     
+    private init() { }
     
-    public static func changeData() {
+    
+    public func changeData() {
         DispatchQueue.global().async {
-            changeOnlineStatus()
-            changeNamesAndEmails()
-            addOrRemoveUsers()
+            self.changeOnlineStatus()
+            self.changeNamesAndEmails()
+            self.addOrRemoveUsers()
             DispatchQueue.main.async {
                 // Calls methods to update tableView and collectionView
                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: "collectionView"), object: nil)
@@ -39,14 +42,14 @@ struct UsersData {
     }
     
     // Randomly changes the online status of each user
-    private static func changeOnlineStatus() {
+    private func changeOnlineStatus() {
         for i in 0..<users.count {
             users[i].isOnline = Bool.random()
         }
     }
     
     // Randomly selects users and changes their names and email
-    private static func changeNamesAndEmails() {
+    private func changeNamesAndEmails() {
         let number = Int.random(in: 0..<users.count)
         
         for _ in 0..<number {
@@ -58,8 +61,8 @@ struct UsersData {
     }
     
     // Adds or removes a random number of users
-    private static func addOrRemoveUsers() {
-        let number = Int.random(in: 0..<users.count/2) 
+    private func addOrRemoveUsers() {
+        let number = Int.random(in: 0..<users.count/2)
         let remove = Bool.random()
         
         for _ in 0..<number {
@@ -77,37 +80,21 @@ struct UsersData {
     }
     
     // They will change the location of the user in the array after viewing additional information about him
-    public static func replaceUser(oldIndex: Int, newIndex: Int) {
+    public func replaceUser(oldIndex: Int, newIndex: Int) {
         DispatchQueue.global().async {
-            let user = users.remove(at: oldIndex)
-            users.insert(user, at: newIndex)
+            let user = self.users.remove(at: oldIndex)
+            self.users.insert(user, at: newIndex)
         }
     }
     
     // Shuffles an array of users after moving between collectionView and tableView
-    public static func mixUsers() {
+    public func mixUsers() {
         DispatchQueue.global().async {
-            for i in 0..<users.count {
-                let user = users.remove(at: i)
-                let newIndex = Int.random(in: 0..<users.count)
-                users.insert(user, at: newIndex)
+            for i in 0..<self.users.count {
+                let user = self.users.remove(at: i)
+                let newIndex = Int.random(in: 0..<self.users.count)
+                self.users.insert(user, at: newIndex)
             }
         }
-    }
-    
-    // Gets a user image
-    public static func getImage(size: Int, user: User) -> UIImage? {
-        guard let hash = getHash(email: user.email) else { return nil }
-        guard let url = URL(string: "https://secure.gravatar.com/avatar/\(hash))?d=monsterid&s=\(size)") else { return nil }
-        guard let data = try? Data(contentsOf: url) else { return nil }
-        guard let image = UIImage(data: data) else { return nil }
-        return image
-    }
-    
-    // Gets the hash code needed to get the image
-    private static func getHash(email: String) -> String? {
-        guard let data = email.data(using: .utf8) else { return nil }
-        let hash = Insecure.MD5.hash(data: data)
-        return hash.map { String(format: "%02hhx", $0) }.joined()
     }
 }

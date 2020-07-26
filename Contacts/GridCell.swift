@@ -8,7 +8,13 @@
 
 import UIKit
 
-class CollectionViewCell: UICollectionViewCell {
+class GridCell: UICollectionViewCell {
+    
+    public var user: UserProtocol? {
+        didSet {
+            addInfo()
+        }
+    }
     
     private let image: UIImageView = {
         let image = UIImageView()
@@ -38,14 +44,14 @@ class CollectionViewCell: UICollectionViewCell {
         image.heightAnchor.constraint(equalToConstant: 40).isActive = true
         image.widthAnchor.constraint(equalToConstant: 40).isActive = true
         image.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 5).isActive = true
-        image.leftAnchor.constraint(equalTo: contentView.leftAnchor, constant: 10).isActive = true
-
+        image.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10).isActive = true
+        
     }
     
     private func setConstraintForOnlineStatus() {
         self.contentView.addSubview(onlineStatus)
         onlineStatus.topAnchor.constraint(equalTo: image.topAnchor, constant: 30).isActive = true
-        onlineStatus.leftAnchor.constraint(equalTo: image.leftAnchor, constant: 28).isActive = true
+        onlineStatus.leadingAnchor.constraint(equalTo: image.leadingAnchor, constant: 28).isActive = true
         onlineStatus.heightAnchor.constraint(equalToConstant: 10).isActive = true
         onlineStatus.widthAnchor.constraint(equalToConstant: 10).isActive = true
     }
@@ -54,14 +60,16 @@ class CollectionViewCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    public func addInfo(user: User) {
-        DispatchQueue.global(qos: .utility).async {
-            let images = UsersData.getImage(size: 40, user: user)
+    private func addInfo() {
+        guard let user = self.user, let request = UserImageRequest.image(email: user.email, size: 40).request else {
+            return
+        }
+        onlineStatus.isHidden = user.isOnline
+        NetworkService(request: request).downloadImage { image in
             DispatchQueue.main.async {
-                self.image.image = images
+                self.image.image = image
             }
         }
-        onlineStatus.isHidden = user.isOnline ? false : true
     }
 }
 

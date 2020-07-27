@@ -80,7 +80,7 @@ class ListCell: UICollectionViewCell {
             return
         }
         userName.text = user.name
-        onlineStatus.isHidden = user.isOnline
+        onlineStatus.isHidden = !user.isOnline
         NetworkService(request: request).downloadImage { image in
             DispatchQueue.main.async {
                 self.userImage.image = image

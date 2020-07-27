@@ -7,7 +7,7 @@ protocol UserProtocol {
     var isOnline: Bool { get set }
 }
 
-// User model
+/// User model
 struct User: UserProtocol {
     var name: String
     var email: String

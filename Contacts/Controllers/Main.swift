@@ -41,6 +41,7 @@ class Main: UIViewController {
     }()
     
     override func viewDidLoad() {
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadData), name: .init("reload"), object: nil)
         super.viewDidLoad()
         view.backgroundColor = .white
         setupButton()
@@ -81,8 +82,14 @@ class Main: UIViewController {
         collectionView.bottomAnchor.constraint(equalTo: button.topAnchor, constant: -10).isActive = true
     }
     
+    @objc private func reloadData() {
+        DispatchQueue.main.async {
+            self.collectionView.reloadData()
+        }
+    }
+    
     @objc private func changeLayout(_ segmentedControll: UISegmentedControl) {
-        collectionView.reloadData()
+        userData.mixUsers()
     }
     
     @objc private func changeUserData() {
@@ -90,12 +97,12 @@ class Main: UIViewController {
     }
 }
 
-
 extension Main: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let detailedInfoController = DetailedInfo()
         detailedInfoController.user = userData.users[indexPath.row]
         navigationController?.pushViewController(detailedInfoController, animated: true)
+        userData.replaceUser(oldIndex: indexPath.row)
     }
 }
 
@@ -111,11 +118,9 @@ extension Main: UICollectionViewDataSource {
         if segmentedControl.selectedSegmentIndex == 0 {
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: listReuseIdentifier, for: indexPath) as? ListCell else { return UICollectionViewCell() }
             cell.user = user
-            cell.backgroundColor = .red
             return cell
         }
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: gridReuseIdentifier, for: indexPath) as? GridCell else { return UICollectionViewCell() }
-        cell.backgroundColor = .yellow
         cell.user = user
         return cell
     }

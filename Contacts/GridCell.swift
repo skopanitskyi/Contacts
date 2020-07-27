@@ -44,7 +44,7 @@ class GridCell: UICollectionViewCell {
         image.heightAnchor.constraint(equalToConstant: 40).isActive = true
         image.widthAnchor.constraint(equalToConstant: 40).isActive = true
         image.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 5).isActive = true
-        image.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 10).isActive = true
+        image.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 5).isActive = true
         
     }
     
@@ -64,7 +64,7 @@ class GridCell: UICollectionViewCell {
         guard let user = self.user, let request = UserImageRequest.image(email: user.email, size: 40).request else {
             return
         }
-        onlineStatus.isHidden = user.isOnline
+        onlineStatus.isHidden = !user.isOnline
         NetworkService(request: request).downloadImage { image in
             DispatchQueue.main.async {
                 self.image.image = image

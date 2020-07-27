@@ -9,14 +9,12 @@
 import Foundation
 import CryptoKit
 
-//"https://secure.gravatar.com/avatar/\(hash))?d=monsterid&s=100"
-
 enum UserImageRequest {
     
     case image(email: String, size: Int)
     
     public var request: URLRequest? {
-        guard var components = URLComponents(string: baseUrl) else { return nil}
+        guard var components = URLComponents(string: baseUrl), let path = self.path else { return nil}
         components.path = path
         components.queryItems = queryComponents
         guard let url = components.url else { return nil }
@@ -27,10 +25,11 @@ enum UserImageRequest {
         return "https://secure.gravatar.com"
     }
     
-    private var path: String {
+    private var path: String? {
         switch self {
         case .image(let email, _):
-            return "/avatar/\(getHash(email: email)!)"
+            guard let hash = getHash(email: email) else { return nil}
+            return "/avatar/\(hash)"
         }
     }
     

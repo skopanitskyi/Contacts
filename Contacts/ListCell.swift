@@ -8,14 +8,24 @@
 
 import UIKit
 
+/// A cell that displays users in a list view
 class ListCell: UICollectionViewCell {
     
+    // MARK: - Class instances
+    
+    /// Size of the image to be loaded
+    private let imageSize: Int = 40
+    
+    /// The user to be displayed in the cell
     public var user: UserProtocol? {
         didSet {
             addInfo()
         }
     }
     
+    // MARK: - Create UI elements
+    
+    /// Create user image view
     private let userImage: UIImageView = {
         let image = UIImageView()
         image.layer.cornerRadius = 20
@@ -24,6 +34,7 @@ class ListCell: UICollectionViewCell {
         return image
     }()
     
+    /// Create online status view
     private let onlineStatus: UIView = {
         let view = UIView()
         view.backgroundColor = .green
@@ -33,12 +44,15 @@ class ListCell: UICollectionViewCell {
         return view
     }()
     
+    /// Create user name label
     private let userName: UILabel = {
         let label = UILabel()
         label.font = UIFont.boldSystemFont(ofSize: 15)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
+    
+    // MARK: - Class constructors
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -51,6 +65,9 @@ class ListCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Add UI elements and setup constraints
+    
+    /// Add a user image on view and set constraints
     private func setupUserImageConstraints() {
         contentView.addSubview(userImage)
         userImage.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 5).isActive = true
@@ -59,6 +76,7 @@ class ListCell: UICollectionViewCell {
         userImage.widthAnchor.constraint(equalToConstant: 40).isActive = true
     }
     
+    /// Add a online status on view and set constraints
     private func setupOnlineStatusConstraints() {
         contentView.addSubview(onlineStatus)
         onlineStatus.topAnchor.constraint(equalTo: userImage.topAnchor, constant: 30).isActive = true
@@ -67,6 +85,7 @@ class ListCell: UICollectionViewCell {
         onlineStatus.widthAnchor.constraint(equalToConstant: 10).isActive = true
     }
     
+    /// Add a user name on view and set constraints
     private func setupUserNameConstraints() {
         contentView.addSubview(userName)
         userName.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 17).isActive = true
@@ -75,8 +94,11 @@ class ListCell: UICollectionViewCell {
         userName.heightAnchor.constraint(equalToConstant: 15).isActive = true
     }
     
+    // MARK: - Class methods
+    
+    /// Adds information about a user to a cell
     private func addInfo() {
-        guard let user = self.user, let request = UserImageRequest.image(email: user.email, size: 40).request else {
+        guard let user = self.user, let request = UserImageRequest.image(email: user.email, size: imageSize).request else {
             return
         }
         userName.text = user.name

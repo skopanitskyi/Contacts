@@ -8,13 +8,26 @@
 
 import UIKit
 
+/// The main controller that displays the list of users
 class Main: UIViewController {
     
+    // MARK: - Class instances
+    
+    /// Singleton object of class User Data
     private let userData = UsersData.shared
+    
+    /// Padding which is used for collection view cell
     private let padding: CGFloat = 5
+    
+    /// Reuse identifier which is used for the list cell
     private let listReuseIdentifier = "List"
+    
+    /// Reuse identifier which is used for the grid cell
     private let gridReuseIdentifier = "Grid"
     
+    // MARK: - Create UI elements
+    
+    /// Create simulate changes button
     private let button: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Simulate Changes", for: .normal)
@@ -23,6 +36,7 @@ class Main: UIViewController {
         return button
     }()
     
+    /// Create segmented control
     private let segmentedControl: UISegmentedControl = {
         let segmentedControl = UISegmentedControl(items: ["List", "Grid"])
         segmentedControl.setWidth(100, forSegmentAt: 0)
@@ -31,6 +45,7 @@ class Main: UIViewController {
         return segmentedControl
     }()
     
+    /// Create collection view
     private let collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
@@ -40,13 +55,16 @@ class Main: UIViewController {
         return collectionView
     }()
     
+    // MARK: - Main controller life cycle
+    
     override func viewDidLoad() {
-        NotificationCenter.default.addObserver(self, selector: #selector(reloadData), name: .init("reload"), object: nil)
         super.viewDidLoad()
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadData),
+                                               name: .init(UsersData.notificationName), object: nil)
         view.backgroundColor = .white
-        setupButton()
+        setupButtonConstraints()
         setupSegmentedControl()
-        setupCollectionView()
+        setupCollectionViewConstraints()
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -57,7 +75,10 @@ class Main: UIViewController {
         flowLayout.invalidateLayout()
     }
     
-    private func setupButton() {
+    // MARK: - Add UI elements and setup constraints
+    
+    /// Add a button on view and set constraints
+    private func setupButtonConstraints() {
         view.addSubview(button)
         button.addTarget(self, action: #selector(changeUserData), for: .touchUpInside)
         button.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor).isActive = true
@@ -65,12 +86,14 @@ class Main: UIViewController {
         button.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -15).isActive = true
     }
     
+    /// Add a segmented control at navigation controller
     private func setupSegmentedControl() {
         segmentedControl.addTarget(self, action: #selector(changeLayout(_:)), for: .valueChanged)
         navigationItem.titleView = segmentedControl
     }
     
-    private func setupCollectionView() {
+    /// Add a collection view on view and set constraints
+    private func setupCollectionViewConstraints() {
         view.addSubview(collectionView)
         collectionView.delegate = self
         collectionView.dataSource = self
@@ -82,31 +105,44 @@ class Main: UIViewController {
         collectionView.bottomAnchor.constraint(equalTo: button.topAnchor, constant: -10).isActive = true
     }
     
+    // MARK: - Class methods
+    
+    /// Updates the collection view after changing the model or layout
     @objc private func reloadData() {
         DispatchQueue.main.async {
             self.collectionView.reloadData()
         }
     }
     
+    /// Modifies layout and sorts the user array
+    ///
+    /// - Parameter segmentedControll: Segmented controll object
     @objc private func changeLayout(_ segmentedControll: UISegmentedControl) {
-        userData.mixUsers()
+        userData.sortsUsers()
     }
     
+    /// Changes the user model randomly
     @objc private func changeUserData() {
         userData.changeData()
     }
 }
 
+// MARK: - CollectionViewDelegate
+
 extension Main: UICollectionViewDelegate {
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let detailedInfoController = DetailedInfo()
         detailedInfoController.user = userData.users[indexPath.row]
         navigationController?.pushViewController(detailedInfoController, animated: true)
-        userData.replaceUser(oldIndex: indexPath.row)
+        userData.replaceUser(at: indexPath.row)
     }
 }
 
+// MARK: - CollectionViewDataSource
+
 extension Main: UICollectionViewDataSource {
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return userData.users.count
     }
@@ -125,6 +161,8 @@ extension Main: UICollectionViewDataSource {
         return cell
     }
 }
+
+// MARK: - CollectionViewDelegateFlowLayout
 
 extension Main: UICollectionViewDelegateFlowLayout {
     

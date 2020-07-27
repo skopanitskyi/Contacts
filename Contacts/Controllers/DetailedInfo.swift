@@ -8,62 +8,77 @@
 
 import UIKit
 
+/// Detailed info controller, that displays complete information about the user
 class DetailedInfo: UIViewController {
     
+    // MARK: - Class instances
+    
+    /// User whose detailed information will be displayed
     public var user: UserProtocol? {
         didSet {
             setupUserData()
         }
     }
     
+    // MARK: - Create UI elements
+    
+    /// Create a layout view to which the image will be added
     private let layoutView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
-    private let avatar: UIImageView = {
+    /// Create user avatar image view
+    private let userAvatar: UIImageView = {
         let image = UIImageView()
         image.translatesAutoresizingMaskIntoConstraints = false
         image.contentMode = .scaleAspectFit
         return image
     }()
     
-    private let name: UITextField = {
-        let textField = UITextField()
-        textField.font = UIFont.systemFont(ofSize: 30)
-        textField.textAlignment = .center
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        return textField
+    /// Create user name label
+    private let userName: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 30)
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
     }()
     
-    private let onlineStatus: UITextField = {
-        let textField = UITextField()
-        textField.font = UIFont.systemFont(ofSize: 20)
-        textField.textAlignment = .center
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        return textField
+    /// Create user online status label
+    private let userOnlineStatus: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 20)
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
     }()
     
-    private let email: UITextField = {
-        let textField = UITextField()
-        textField.font = UIFont.systemFont(ofSize: 25)
-        textField.textAlignment = .center
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        
-        return textField
+    /// Create user email label
+    private let userEmail: UILabel = {
+        let label = UILabel()
+        label.font = UIFont.systemFont(ofSize: 25)
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
     }()
+    
+    // MARK: - Detailed info controller life cycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
         setupLayoutView()
-        setupAvatar()
-        setupName()
-        setupOnlineStatus()
-        setupEmail()
+        setupUserAvatarConstraints()
+        setupUserNameConstraints()
+        setupUserOnlineStatusConstraints()
+        setupUserEmailConstraints()
     }
     
+    // MARK: - Add UI elements and setup constraints
+    
+    /// Add a layout view on view and set constraints
     private func setupLayoutView() {
         view.addSubview(layoutView)
         layoutView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
@@ -72,49 +87,54 @@ class DetailedInfo: UIViewController {
         layoutView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.5).isActive = true
     }
     
-    
-    private func setupAvatar() {
-        layoutView.addSubview(avatar)
-        avatar.centerXAnchor.constraint(equalTo: layoutView.centerXAnchor).isActive = true
-        avatar.centerYAnchor.constraint(equalTo: layoutView.centerYAnchor).isActive = true
-        avatar.heightAnchor.constraint(equalTo: layoutView.heightAnchor, multiplier: 0.5).isActive = true
+    /// Add a user avatar on view and set constraints
+    private func setupUserAvatarConstraints() {
+        layoutView.addSubview(userAvatar)
+        userAvatar.centerXAnchor.constraint(equalTo: layoutView.centerXAnchor).isActive = true
+        userAvatar.centerYAnchor.constraint(equalTo: layoutView.centerYAnchor).isActive = true
+        userAvatar.heightAnchor.constraint(equalTo: layoutView.heightAnchor, multiplier: 0.5).isActive = true
     }
     
-    private func setupName() {
-        view.addSubview(name)
-        name.topAnchor.constraint(equalTo: avatar.bottomAnchor, constant: 15).isActive = true
-        name.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
-        name.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
-        name.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+    /// Add a user name label on view and set constraints
+    private func setupUserNameConstraints() {
+        view.addSubview(userName)
+        userName.topAnchor.constraint(equalTo: userAvatar.bottomAnchor, constant: 15).isActive = true
+        userName.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+        userName.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
+        userName.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
     }
     
-    private func setupOnlineStatus() {
-        
-        view.addSubview(onlineStatus)
-        onlineStatus.topAnchor.constraint(equalTo: name.bottomAnchor, constant: 10).isActive = true
-        onlineStatus.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
-        onlineStatus.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
-        onlineStatus.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+    /// Add a online status label on view and set constraints
+    private func setupUserOnlineStatusConstraints() {
+        view.addSubview(userOnlineStatus)
+        userOnlineStatus.topAnchor.constraint(equalTo: userName.bottomAnchor, constant: 10).isActive = true
+        userOnlineStatus.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+        userOnlineStatus.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
+        userOnlineStatus.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
     }
     
-    private func setupEmail() {
-        view.addSubview(email)
-        email.topAnchor.constraint(equalTo: onlineStatus.bottomAnchor, constant: 10).isActive = true
-        email.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
-        email.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
-        email.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+    /// Add a user email label on view and set constraints
+    private func setupUserEmailConstraints() {
+        view.addSubview(userEmail)
+        userEmail.topAnchor.constraint(equalTo: userOnlineStatus.bottomAnchor, constant: 10).isActive = true
+        userEmail.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+        userEmail.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
+        userEmail.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
     }
     
+    // MARK: - Class methods
+    
+    /// Adds information about a user on view
     private func setupUserData() {
         guard let user = self.user, let request = UserImageRequest.image(email: user.email, size: 200).request else {
             return
         }
-        name.text = user.name
-        email.text = user.email
-        onlineStatus.text = user.isOnline ? "online" : "offline"
+        userName.text = user.name
+        userEmail.text = user.email
+        userOnlineStatus.text = user.isOnline ? "online" : "offline"
         NetworkService(request: request).downloadImage { image in
             DispatchQueue.main.async {
-                self.avatar.image = image
+                self.userAvatar.image = image
             }
         }
     }

@@ -1,15 +1,15 @@
 import Foundation
 
-
+/// User protocol
 protocol UserProtocol {
     var name: String { get set }
     var email: String { get set }
     var isOnline: Bool { get set }
 }
 
-/// User model
+/// User data model
 struct User: UserProtocol {
-    var name: String
-    var email: String
-    var isOnline: Bool
+   public var name: String
+   public var email: String
+   public var isOnline: Bool
 }
